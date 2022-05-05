@@ -1,70 +1,80 @@
-const cards = document.querySelectorAll('.card');
+const cards = document.querySelectorAll(".card");
+let flippedCards = [];
 let hasFlippedCard = false;
 let firstCard, secondCard;
 let lockBoard = false;
 
 //função para virar carta
 function flipCard() {
-    if(lockBoard) return;
-    if(this === firstCard) return;
+	if (lockBoard) return;
+	if (this === firstCard) return;
 
-    this.classList.add('flip');
-    if(!hasFlippedCard) {
-        hasFlippedCard = true;
-        firstCard = this;
-        return;
-    }
+	this.classList.add("flip");
+	if (!hasFlippedCard) {
+		hasFlippedCard = true;
+		firstCard = this;
+		return;
+	}
 
-    secondCard = this;
-    hasFlippedCard = false;
-    checkForMatch();
+	secondCard = this;
+	hasFlippedCard = false;
+	checkForMatch();
+
+	if (flippedCards.length === cards.length) {
+		setTimeout(() => {
+			window.location.reload();
+		}, 1500);
+	}
 }
 
 //função que checa se as cartas são iguais
 function checkForMatch() {
-    if(firstCard.dataset.card === secondCard.dataset.card) {
-        disableCards();
-        return;
-    }
+	if (firstCard.dataset.card === secondCard.dataset.card) {
+		flippedCards = [...cards].filter((card) =>
+			card.classList.contains("flip")
+		);
+		disableCards();
+		return;
+	}
 
-    unflipCards();
+	unflipCards();
 }
 
 //função que desabilita as cartas
 function disableCards() {
-    firstCard.removeEventListener('click', flipCard);
-    secondCard.removeEventListener('click', flipCard);
+	firstCard.removeEventListener("click", flipCard);
+	secondCard.removeEventListener("click", flipCard);
 
-    resetBoard();
+	resetBoard();
 }
 
 //funcão que desvira as cartas
 function unflipCards() {
-    lockBoard = true;
+	lockBoard = true;
 
-    setTimeout(() => {
-        firstCard.classList.remove('flip');
-        secondCard.classList.remove('flip');
+	setTimeout(() => {
+		firstCard.classList.remove("flip");
+		secondCard.classList.remove("flip");
 
-        resetBoard();
-    }, 1500);
+		resetBoard();
+	}, 1500);
 }
 
 //função que reseta o tabuleiro
 function resetBoard() {
-    [hasFlippedCard, lockBoard] = [false, false];
-    [firstCard, secondCard] = [null, null];
+	[hasFlippedCard, lockBoard] = [false, false];
+	[firstCard, secondCard] = [null, null];
 }
 
 //função que embaralha as cartas
 (function shuffle() {
-    cards.forEach((card) => {
-        let ramdomPosition = Math.floor(Math.random() * 12);
-        card.style.order = ramdomPosition;
-    })
+	cards.forEach((card) => {
+		let randomPosition = Math.floor(Math.random() * 12);
+		card.style.order = randomPosition;
+	});
 })();
 
 //adiciona evento de clique na carta
 cards.forEach((card) => {
-    card.addEventListener('click', flipCard)
+	card.addEventListener("click", flipCard);
 });
